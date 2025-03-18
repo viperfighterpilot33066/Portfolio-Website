@@ -82,7 +82,7 @@ function updateContent(tabName) {
     `;
 
     const images1 = [
-      'screenshot1.png',
+      'images/screenshot1.png',
       'images/screenshot2.png',
       'images/screenshot3.png',
     ];
