@@ -72,11 +72,9 @@ function updateContent(tabName) {
     content.innerHTML = `
       <h1>My Projects</h1>
       <br>
-      <p>our portfolio is empty for now</p>
-      <br>
-      <!--place holders for projects-->
       <h3>Showcase 1</h3>
       <div class="slideshow" id="slideshow1"></div>
+      <br>
       <h3>Showcase 2</h3>
       <div class="slideshow" id="slideshow2"></div>
     `;
