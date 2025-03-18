@@ -1,0 +1,78 @@
+ * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      text-align: left;
+      font-family: sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    
+    /* Navbar styling using class selector (.navTabs) */
+    .navTabs {
+      display: flex;
+      justify-content: center;
+      background-color: #333;
+      padding: 10px;
+    }
+    
+    .navTabs a {
+      color: white;
+      text-decoration: none;
+      padding: 10px 20px;
+      margin: 0 5px;
+      font-size: 16px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    
+    .navTabs a:hover {
+      background-color: #575757;
+    }
+    
+    .navTabs a.active {
+      background-color: #0078D4;
+    }
+    
+    /* Main content styling */
+    #content {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    
+    /* Container1 styling if used within content */
+    #container1 {
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #fff;
+      text-align: left !important;
+      line-height: 1.5;
+      overflow-wrap: break-word;
+    }
+    
+    /* Social media footer styling */
+    .social-media {
+      text-align: center;
+      margin: 40px 0;
+      font-size: 14px;
+      color: #555;
+    }
+    
+    .social-media a {
+      color: #0078D4;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+    
+    .social-media a:hover {
+      text-decoration: underline;
+    }
