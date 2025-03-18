@@ -65,7 +65,31 @@
     height: auto;
     display: block;
     margin: 0 auto;
+    transition: opacity 0.5s ease; /* Smooth transition for image changes */
 }
+
+/* Fullscreen styles */
+:fullscreen .slideshow img {
+    width: 100vw; /* Full width of the viewport */
+    height: 100vh; /* Full height of the viewport */
+    object-fit: cover; /* Cover the entire area */
+}
+
+/* Button styles */
+.slideshow button {
+    background-color: #0078D4; /* Button background color */
+    color: white; /* Button text color */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px 15px; /* Padding for button */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Smooth background color transition */
+}
+
+.slideshow button:hover {
+    background-color: #0053a6; /* Darker background on hover */
+}
+
 
 /* Responsive styles for mobile devices */
 @media (max-width: 600px) {

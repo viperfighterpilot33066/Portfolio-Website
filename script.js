@@ -97,13 +97,16 @@ function updateContent(tabName) {
     let currentIndex2 = 0;
 
     function showImage(index, images, slideshow) {
-      slideshow.innerHTML = `<img src="${images[index]}" alt="Screenshot ${index + 1}">`;
+      slideshow.innerHTML = `<img src="${images[index]}" alt="Screenshot ${index + 1}" style="transition: opacity 0.5s ease;">`;
     }
 
     showImage(currentIndex1, images1, document.getElementById('slideshow1'));
     showImage(currentIndex2, images2, document.getElementById('slideshow2'));
 
-    const nextButton1 = document.createElement('button');
+    const nextButton1 = document.createElement('button'); 
+    let autoCycle1; // Variable to hold the auto-cycle interval for slideshow 1
+    let autoCycle2; // Variable to hold the auto-cycle interval for slideshow 2
+
     nextButton1.style.position = 'absolute';
     nextButton1.style.right = '10px';
     nextButton1.style.top = '50%';
@@ -125,7 +128,23 @@ function updateContent(tabName) {
       showImage(currentIndex1, images1, document.getElementById('slideshow1'));
     });
 
-    const nextButton2 = document.createElement('button');
+    const nextButton2 = document.createElement('button'); 
+    // Function to start auto-cycling for slideshow 1
+    function startAutoCycle1() {
+      autoCycle1 = setInterval(() => {
+        currentIndex1 = (currentIndex1 + 1) % images1.length;
+        showImage(currentIndex1, images1, document.getElementById('slideshow1'));
+      }, 5000); // Change image every 5 seconds
+    }
+
+    // Function to start auto-cycling for slideshow 2
+    function startAutoCycle2() {
+      autoCycle2 = setInterval(() => {
+        currentIndex2 = (currentIndex2 + 1) % images2.length;
+        showImage(currentIndex2, images2, document.getElementById('slideshow2'));
+      }, 5000); // Change image every 5 seconds
+    }
+
     nextButton2.style.position = 'absolute';
     nextButton2.style.right = '10px';
     nextButton2.style.top = '50%';
@@ -147,10 +166,38 @@ function updateContent(tabName) {
       showImage(currentIndex2, images2, document.getElementById('slideshow2'));
     });
 
-    document.getElementById('slideshow1').appendChild(prevButton1);
+    document.getElementById('slideshow1').appendChild(prevButton1); 
+    startAutoCycle1(); // Start auto-cycling for slideshow 1
+
     document.getElementById('slideshow1').appendChild(nextButton1);
-    document.getElementById('slideshow2').appendChild(prevButton2);
+    document.getElementById('slideshow2').appendChild(prevButton2); 
+    startAutoCycle2(); // Start auto-cycling for slideshow 2
+
     document.getElementById('slideshow2').appendChild(nextButton2);
+
+    const fullscreenButton1 = document.createElement('button'); 
+    fullscreenButton1.textContent = 'Full Screen'; 
+    fullscreenButton1.addEventListener('click', () => { 
+      // Full screen functionality for slideshow 1 
+      if (document.fullscreenElement) { 
+        document.exitFullscreen(); 
+      } else { 
+        document.getElementById('slideshow1').requestFullscreen(); 
+      } 
+    }); 
+    document.getElementById('slideshow1').appendChild(fullscreenButton1); 
+
+    const fullscreenButton2 = document.createElement('button'); 
+    fullscreenButton2.textContent = 'Full Screen'; 
+    fullscreenButton2.addEventListener('click', () => { 
+      // Full screen functionality for slideshow 2 
+      if (document.fullscreenElement) { 
+        document.exitFullscreen(); 
+      } else { 
+        document.getElementById('slideshow2').requestFullscreen(); 
+      } 
+    }); 
+    document.getElementById('slideshow2').appendChild(fullscreenButton2); 
   } else if (tabName === 'contact') {
     content.innerHTML = `
       <h1>Contact Page</h1>
