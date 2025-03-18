@@ -72,9 +72,11 @@ function updateContent(tabName) {
     content.innerHTML = `
       <h1>My Projects</h1>
       <br>
+      <p>our portfolio is empty for now</p>
+      <br>
+      <!--place holders for projects-->
       <h3>Showcase 1</h3>
       <div class="slideshow" id="slideshow1"></div>
-      <br>
       <h3>Showcase 2</h3>
       <div class="slideshow" id="slideshow2"></div>
     `;
@@ -96,40 +98,54 @@ function updateContent(tabName) {
 
     function showImage(index, images, slideshow) {
       slideshow.innerHTML = `<img src="${images[index]}" alt="Screenshot ${index + 1}" style="transition: opacity 0.5s ease;">`;
+      // Append buttons after showing the image
+      appendButtons(slideshow, index, images);
+    }
+
+    function appendButtons(slideshow, index, images) {
+      const nextButton = document.createElement('button'); 
+      nextButton.style.position = 'absolute';
+      nextButton.style.right = '10px';
+      nextButton.style.top = '50%';
+      nextButton.style.transform = 'translateY(-50%)';
+      nextButton.textContent = 'Next';
+      nextButton.addEventListener('click', () => {
+        currentIndex1 = (currentIndex1 + 1) % images.length;
+        showImage(currentIndex1, images, slideshow);
+      });
+
+      const prevButton = document.createElement('button');
+      prevButton.style.position = 'absolute';
+      prevButton.style.left = '10px';
+      prevButton.style.top = '50%';
+      prevButton.style.transform = 'translateY(-50%)';
+      prevButton.textContent = 'Previous';
+      prevButton.addEventListener('click', () => {
+        currentIndex1 = (currentIndex1 - 1 + images.length) % images.length;
+        showImage(currentIndex1, images, slideshow);
+      });
+
+      slideshow.appendChild(prevButton);
+      slideshow.appendChild(nextButton);
+
+      const fullscreenButton = document.createElement('button'); 
+      fullscreenButton.textContent = 'Full Screen'; 
+      fullscreenButton.addEventListener('click', () => { 
+        if (document.fullscreenElement) { 
+          document.exitFullscreen(); 
+        } else { 
+          slideshow.requestFullscreen(); 
+        } 
+      }); 
+      slideshow.appendChild(fullscreenButton);
     }
 
     showImage(currentIndex1, images1, document.getElementById('slideshow1'));
     showImage(currentIndex2, images2, document.getElementById('slideshow2'));
 
-    const nextButton1 = document.createElement('button'); 
-    let autoCycle1; // Variable to hold the auto-cycle interval for slideshow 1
-    let autoCycle2; // Variable to hold the auto-cycle interval for slideshow 2
-
-    nextButton1.style.position = 'absolute';
-    nextButton1.style.right = '10px';
-    nextButton1.style.top = '50%';
-    nextButton1.style.transform = 'translateY(-50%)';
-    nextButton1.textContent = 'Next';
-    nextButton1.addEventListener('click', () => {
-      currentIndex1 = (currentIndex1 + 1) % images1.length;
-      showImage(currentIndex1, images1, document.getElementById('slideshow1'));
-    });
-
-    const prevButton1 = document.createElement('button');
-    prevButton1.style.position = 'absolute';
-    prevButton1.style.left = '10px';
-    prevButton1.style.top = '50%';
-    prevButton1.style.transform = 'translateY(-50%)';
-    prevButton1.textContent = 'Previous';
-    prevButton1.addEventListener('click', () => {
-      currentIndex1 = (currentIndex1 - 1 + images1.length) % images1.length;
-      showImage(currentIndex1, images1, document.getElementById('slideshow1'));
-    });
-
-    const nextButton2 = document.createElement('button'); 
     // Function to start auto-cycling for slideshow 1
     function startAutoCycle1() {
-      autoCycle1 = setInterval(() => {
+      setInterval(() => {
         currentIndex1 = (currentIndex1 + 1) % images1.length;
         showImage(currentIndex1, images1, document.getElementById('slideshow1'));
       }, 5000); // Change image every 5 seconds
@@ -137,65 +153,15 @@ function updateContent(tabName) {
 
     // Function to start auto-cycling for slideshow 2
     function startAutoCycle2() {
-      autoCycle2 = setInterval(() => {
+      setInterval(() => {
         currentIndex2 = (currentIndex2 + 1) % images2.length;
         showImage(currentIndex2, images2, document.getElementById('slideshow2'));
       }, 5000); // Change image every 5 seconds
     }
 
-    nextButton2.style.position = 'absolute';
-    nextButton2.style.right = '10px';
-    nextButton2.style.top = '50%';
-    nextButton2.style.transform = 'translateY(-50%)';
-    nextButton2.textContent = 'Next';
-    nextButton2.addEventListener('click', () => {
-      currentIndex2 = (currentIndex2 + 1) % images2.length;
-      showImage(currentIndex2, images2, document.getElementById('slideshow2'));
-    });
-
-    const prevButton2 = document.createElement('button');
-    prevButton2.style.position = 'absolute';
-    prevButton2.style.left = '10px';
-    prevButton2.style.top = '50%';
-    prevButton2.style.transform = 'translateY(-50%)';
-    prevButton2.textContent = 'Previous';
-    prevButton2.addEventListener('click', () => {
-      currentIndex2 = (currentIndex2 - 1 + images2.length) % images2.length;
-      showImage(currentIndex2, images2, document.getElementById('slideshow2'));
-    });
-
-    document.getElementById('slideshow1').appendChild(prevButton1); 
     startAutoCycle1(); // Start auto-cycling for slideshow 1
-
-    document.getElementById('slideshow1').appendChild(nextButton1);
-    document.getElementById('slideshow2').appendChild(prevButton2); 
     startAutoCycle2(); // Start auto-cycling for slideshow 2
 
-    document.getElementById('slideshow2').appendChild(nextButton2);
-
-    const fullscreenButton1 = document.createElement('button'); 
-    fullscreenButton1.textContent = 'Full Screen'; 
-    fullscreenButton1.addEventListener('click', () => { 
-      // Full screen functionality for slideshow 1 
-      if (document.fullscreenElement) { 
-        document.exitFullscreen(); 
-      } else { 
-        document.getElementById('slideshow1').requestFullscreen(); 
-      } 
-    }); 
-    document.getElementById('slideshow1').appendChild(fullscreenButton1); 
-
-    const fullscreenButton2 = document.createElement('button'); 
-    fullscreenButton2.textContent = 'Full Screen'; 
-    fullscreenButton2.addEventListener('click', () => { 
-      // Full screen functionality for slideshow 2 
-      if (document.fullscreenElement) { 
-        document.exitFullscreen(); 
-      } else { 
-        document.getElementById('slideshow2').requestFullscreen(); 
-      } 
-    }); 
-    document.getElementById('slideshow2').appendChild(fullscreenButton2); 
   } else if (tabName === 'contact') {
     content.innerHTML = `
       <h1>Contact Page</h1>

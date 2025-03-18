@@ -84,7 +84,10 @@
     padding: 10px 15px; /* Padding for button */
     cursor: pointer; /* Pointer cursor on hover */
     transition: background-color 0.3s ease; /* Smooth background color transition */
+    position: absolute; /* Position buttons absolutely */
+    z-index: 10; /* Ensure buttons are above images */
 }
+
 
 .slideshow button:hover {
     background-color: #0053a6; /* Darker background on hover */
@@ -96,6 +99,12 @@
     .slideshow img {
         max-width: 90%; /* Adjust image size for smaller screens */
     }
+    
+    .slideshow button {
+        padding: 12px; /* Make buttons larger for easier tapping */
+        font-size: 16px; /* Increase font size for better readability */
+    }
+
 
     .slideshow button {
         padding: 10px; /* Make buttons larger for easier tapping */
