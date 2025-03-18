@@ -72,11 +72,14 @@ function updateContent(tabName) {
     content.innerHTML = `
       <h1>My Projects</h1>
       <br>
-      <p>our portfolio is empty for now</p>
-      <br>
-      <!--place holders for projects-->
-      <h3>Showcase 1</h3>
+      <h3>Weather Website</h3>
       <div class="slideshow" id="slideshow1"></div>
+      <h3>About Project</h3><br>
+      <p>this project is a website that you can get the weather in your current location via geolocation or typing your location, 
+      it also feature a radar and a news tab to stay updated and whats going on around you!</p>
+      <p>the project can be found <a href-"www.vantechweather.com">here</a></p>
+      <br>
+      <br>
       <h3>Showcase 2</h3>
       <div class="slideshow" id="slideshow2"></div>
     `;
