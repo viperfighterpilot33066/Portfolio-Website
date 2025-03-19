@@ -153,13 +153,19 @@ function updateContent(tabName) {
         <!-- Project Card 2 -->
         <div class="project-card" id="project2" data-project-id="project2">
           <div class="project-slider" id="slider-project2">
-            <img src="https://via.placeholder.com/300x200?text=Project+2+Image+1" alt="Project 2 Image 1" class="active">
-            <img src="https://via.placeholder.com/300x200?text=Project+2+Image+2" alt="Project 2 Image 2">
-            <img src="https://via.placeholder.com/300x200?text=Project+2+Image+3" alt="Project 2 Image 3">
+            <img src="images/screenshot4.png" alt="Project 2 Image 1" class="active">
+            <img src="images/screenshot5.png" alt="Project 2 Image 2">
+            <img src="images/screenshot6.png" alt="Project 2 Image 3">
           </div>
           <div class="project-info">
-            <h3>Project Two</h3>
-            <p>This project exhibits my front-end expertise and attention to detail in design.</p>
+            <h3>Weather & News Website</h3>
+            <p>this website gives you realtime weather in your location and features geolocation or
+            manually enter you location to get the weather, it has light and dark mode, a weather radar that automatic
+            ally moves to your location based on your inputs and a news channel where you can search news based on keywords, topics, 
+            or just browse through the latest.
+            <br>
+            this project can be found <a href="www.vantechweather.com">here</a>
+            </p>
           </div>
           <div class="project-interactions">
             <button class="like-btn">Like <span class="like-count">0</span></button>
