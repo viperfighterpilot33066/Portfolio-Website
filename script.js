@@ -122,9 +122,9 @@ function updateContent(tabName) {
         <!-- Project Card 1 -->
         <div class="project-card" id="project1" data-project-id="project1">
           <div class="project-slider" id="slider-project1">
-            <img src="https://via.placeholder.com/300x200?text=Project+1+Image+1" alt="Project 1 Image 1" class="active">
-            <img src="https://via.placeholder.com/300x200?text=Project+1+Image+2" alt="Project 1 Image 2">
-            <img src="https://via.placeholder.com/300x200?text=Project+1+Image+3" alt="Project 1 Image 3">
+            <img src="images/screenshot1.png" alt="Project 1 Image 1" class="active">
+            <img src="images/screenshot2.png" alt="Project 1 Image 2">
+            <img src="images/screenshot3.png" alt="Project 1 Image 3">
           </div>
           <div class="project-info">
             <h3>Project One</h3>
