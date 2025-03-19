@@ -1,282 +1,539 @@
-// Step 1: Select all tabs
-const tabs = document.querySelectorAll('.tab-link');
-const content = document.getElementById('content'); // Content area
-const defaultTab = document.querySelector('.tab-link.active'); // Default active tab
+// ===== Firebase Configuration & Initialization =====
+const firebaseConfig = {
+  apiKey: "AIzaSyAaVtjJ9MpA72E0yq6yWJH7zJm08YE3YtM",
+  authDomain: "website-portfolio-4999d.firebaseapp.com",
+  projectId: "website-portfolio-4999d",
+  storageBucket: "website-portfolio-4999d.firebasestorage.app",
+  messagingSenderId: "138002001938",
+  appId: "1:138002001938:web:6dfecd9ea345ba76d7e8cb",
+  measurementId: "G-RP1SW3ZEHJ"
+};
 
-// Step 2: Load the default tab content on page load
-if (defaultTab) {
-  const tabName = defaultTab.getAttribute('data-tab');
-  updateContent(tabName); // Call the content update function for the default tab
-  updateTitle(tabName);   // Set the browser title for the default tab
-}
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
 
-// Step 3: Add a click event to each tab
-tabs.forEach(tab => {
-  tab.addEventListener('click', function (event) {
-    event.preventDefault(); // Stop the default link action
-
-    // Remove 'active' class from all tabs
-    tabs.forEach(t => t.classList.remove('active'));
-
-    // Add 'active' class to the clicked tab
-    this.classList.add('active');
-
-    // Get the tab name from the data attribute
-    const tabName = this.getAttribute('data-tab');
-
-    // Step 4: Update content and browser title
-    updateContent(tabName);
-    updateTitle(tabName);
-  });
+let currentUser = null;
+auth.onAuthStateChanged(user => {
+  currentUser = user;
+  updateAuthUI();
 });
 
-// Function to update the content dynamically
-function updateContent(tabName) {
-  const slideshowContainer = document.createElement('div');
-  slideshowContainer.classList.add('slideshow');
+// Update authentication UI in header.
+function updateAuthUI() {
+  const authSection = document.getElementById('auth-section');
+  if (currentUser) {
+    authSection.innerHTML = `
+      <span>Welcome, ${currentUser.email}</span>
+      <button id="logout-btn">Logout</button>
+    `;
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      auth.signOut();
+    });
+  } else {
+    authSection.innerHTML = `<button id="login-btn">Login</button>`;
+    document.getElementById('login-btn').addEventListener('click', () => {
+      document.getElementById('login-modal').style.display = 'flex';
+    });
+  }
+}
 
+// Login form submission.
+document.getElementById('login-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+  auth.signInWithEmailAndPassword(email, password)
+    .then(() => { document.getElementById('login-modal').style.display = 'none'; })
+    .catch(err => alert(err.message));
+});
+
+// Signup form submission.
+document.getElementById('signup-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const email = document.getElementById('signup-email').value;
+  const password = document.getElementById('signup-password').value;
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(() => { document.getElementById('login-modal').style.display = 'none'; })
+    .catch(err => alert(err.message));
+});
+
+document.getElementById('close-login-modal').addEventListener('click', () => {
+  document.getElementById('login-modal').style.display = 'none';
+});
+
+// Global slider intervals.
+let sliderIntervals = [];
+function clearSliderIntervals() {
+  sliderIntervals.forEach(id => clearInterval(id));
+  sliderIntervals = [];
+}
+
+/**
+ * loadProjectData()
+ * Loads reaction counts for each project.
+ */
+function loadProjectData() {
+  const projectIds = ["project1", "project2"];
+  projectIds.forEach(projectId => {
+    db.collection("projects").doc(projectId).get()
+      .then(doc => {
+        const projectCard = document.getElementById(projectId);
+        if (projectCard) {
+          if (doc.exists) {
+            const data = doc.data();
+            projectCard.querySelector('.like-count').textContent = data.likes || 0;
+            projectCard.querySelector('.dislike-count').textContent = data.dislikes || 0;
+          } else {
+            db.collection("projects").doc(projectId).set({ likes: 0, dislikes: 0 });
+          }
+        }
+      })
+      .catch(err => console.error("Error loading project data:", err));
+  });
+}
+
+// ===== Global Content Update Function =====
+function updateContent(tabName) {
+  const content = document.getElementById('content');
   if (tabName === 'home') {
     content.innerHTML = `
       <h1>Hello, I'm Tristan.</h1>
-      <br>
       <h2>Skills:</h2>
       <ul>
         <li>HTML</li>
         <li>CSS</li>
         <li>JavaScript</li>
       </ul>
-      <p>--------------------</p>
-      <p><strong>My goal</strong> is to build websites for you <em>dirt cheap or free</em> so I can build up my project portfolio.</p>
-      <br>
-      <p>(To learn more about me, go to the About Page or to request a website head to the contact page.)</p>
-      <div id="socialMedia">
-        <!-- Additional social media info can be added here -->
+      <div id="container1">
+        <p>A little about me: I'm a passionate web developer who loves exploring new technologies, including cybersecurity and ethical hacking.</p>
       </div>
     `;
   } else if (tabName === 'about') {
     content.innerHTML = `
       <h1>About Me</h1>
-      <br>
-      <p><strong>My name</strong> is Tristan Vanderweert, and I’m a full-stack developer as well as a student pilot.
-      <br>
-      <br>
-      <strong>I specialize</strong> in HTML, CSS, JavaScript, cybersecurity, and ethical hacking, and I thrive on breaking down complex challenges into manageable steps. 
-      <br>
-      <br>
-      <strong>My problem-solving approach</strong> is all about dividing big issues into smaller, actionable tasks so I can tackle them efficiently. Beyond 
-      <br>
-      <br>
-      <strong>my technical pursuits</strong>, I’m driven by an unwavering passion for aviation—I aspire to join the Air Force and attend the Air Force Academy to become a fighter pilot. Whether coding or flying, I believe precision, discipline, and a relentless pursuit of excellence are the keys to success.</p>
+      <p>My name is Tristan Vanderweert. I'm a full-stack developer and an aspiring fighter pilot. I enjoy problem solving, creative interface design, and exploring cybersecurity.</p>
     `;
   } else if (tabName === 'projects') {
+    clearSliderIntervals();
     content.innerHTML = `
       <h1>My Projects</h1>
-      <br>
-      <h3>Weather Website</h3>
-      <div class="slideshow" id="slideshow1"></div>
-      <h3>About Project</h3><br>
-      <p>this project is a website that you can get the weather in your current location via geolocation or typing your location, 
-      it also feature a radar and a news tab to stay updated and whats going on around you!</p>
-      <p>the project can be found <a href-"www.vantechweather.com">here</a></p>
-      <br>
-      <br>
-      <h3>Showcase 2</h3>
-      <div class="slideshow" id="slideshow2"></div>
+      <section id="projects-section">
+        <!-- Project Card 1 -->
+        <div class="project-card" id="project1" data-project-id="project1">
+          <div class="project-slider" id="slider-project1">
+            <img src="https://via.placeholder.com/300x200?text=Project+1+Image+1" alt="Project 1 Image 1" class="active">
+            <img src="https://via.placeholder.com/300x200?text=Project+1+Image+2" alt="Project 1 Image 2">
+            <img src="https://via.placeholder.com/300x200?text=Project+1+Image+3" alt="Project 1 Image 3">
+          </div>
+          <div class="project-info">
+            <h3>Project One</h3>
+            <p>This project showcases my skills in web development with a modern, clean design.</p>
+          </div>
+          <div class="project-interactions">
+            <button class="like-btn">Like <span class="like-count">0</span></button>
+            <button class="dislike-btn">Dislike <span class="dislike-count">0</span></button>
+            <button class="share-btn">Share</button>
+          </div>
+          <div class="project-comments">
+            <h4>Comments</h4>
+            <div class="comments-area"></div>
+            <form onsubmit="submitProjectComment(event, 'project1')">
+              <input type="text" name="comment" placeholder="Leave a comment" required>
+              <button type="submit">Post</button>
+            </form>
+          </div>
+        </div>
+  
+        <!-- Project Card 2 -->
+        <div class="project-card" id="project2" data-project-id="project2">
+          <div class="project-slider" id="slider-project2">
+            <img src="https://via.placeholder.com/300x200?text=Project+2+Image+1" alt="Project 2 Image 1" class="active">
+            <img src="https://via.placeholder.com/300x200?text=Project+2+Image+2" alt="Project 2 Image 2">
+            <img src="https://via.placeholder.com/300x200?text=Project+2+Image+3" alt="Project 2 Image 3">
+          </div>
+          <div class="project-info">
+            <h3>Project Two</h3>
+            <p>This project exhibits my front-end expertise and attention to detail in design.</p>
+          </div>
+          <div class="project-interactions">
+            <button class="like-btn">Like <span class="like-count">0</span></button>
+            <button class="dislike-btn">Dislike <span class="dislike-count">0</span></button>
+            <button class="share-btn">Share</button>
+          </div>
+          <div class="project-comments">
+            <h4>Comments</h4>
+            <div class="comments-area"></div>
+            <form onsubmit="submitProjectComment(event, 'project2')">
+              <input type="text" name="comment" placeholder="Leave a comment" required>
+              <button type="submit">Post</button>
+            </form>
+          </div>
+        </div>
+      </section>
     `;
-
-    const images1 = [
-      'images/screenshot1.png',
-      'images/screenshot2.png',
-      'images/screenshot3.png',
-    ];
-
-    const images2 = [
-      'images/screenshot4.png',
-      'images/screenshot5.png',
-      'images/screenshot6.png',
-    ];
-
-    let currentIndex1 = 0;
-    let currentIndex2 = 0;
-
-    function showImage(index, images, slideshow) {
-      slideshow.innerHTML = `<img src="${images[index]}" alt="Screenshot ${index + 1}" style="transition: opacity 0.5s ease;">`;
-      // Append buttons after showing the image
-      appendButtons(slideshow, index, images);
-    }
-
-    function appendButtons(slideshow, index, images) {
-      const nextButton = document.createElement('button'); 
-      nextButton.style.position = 'absolute';
-      nextButton.style.right = '10px';
-      nextButton.style.top = '50%';
-      nextButton.style.transform = 'translateY(-50%)';
-      nextButton.textContent = 'Next';
-      nextButton.addEventListener('click', () => {
-        currentIndex1 = (currentIndex1 + 1) % images.length;
-        showImage(currentIndex1, images, slideshow);
+    initializeSlider('slider-project1');
+    initializeSlider('slider-project2');
+    
+    document.querySelectorAll('.like-btn').forEach(btn => {
+      btn.addEventListener('click', function(){
+        const projectCard = this.closest('.project-card');
+        const projectId = projectCard.getAttribute('data-project-id');
+        updateProjectReaction(projectId, 'like');
       });
-
-      const prevButton = document.createElement('button');
-      prevButton.style.position = 'absolute';
-      prevButton.style.left = '10px';
-      prevButton.style.top = '50%';
-      prevButton.style.transform = 'translateY(-50%)';
-      prevButton.textContent = 'Previous';
-      prevButton.addEventListener('click', () => {
-        currentIndex1 = (currentIndex1 - 1 + images.length) % images.length;
-        showImage(currentIndex1, images, slideshow);
+    });
+    document.querySelectorAll('.dislike-btn').forEach(btn => {
+      btn.addEventListener('click', function(){
+        const projectCard = this.closest('.project-card');
+        const projectId = projectCard.getAttribute('data-project-id');
+        updateProjectReaction(projectId, 'dislike');
       });
-
-      slideshow.appendChild(prevButton);
-      slideshow.appendChild(nextButton);
-
-      const fullscreenButton = document.createElement('button'); 
-      fullscreenButton.textContent = 'Full Screen'; 
-      fullscreenButton.addEventListener('click', () => { 
-        if (document.fullscreenElement) { 
-          document.exitFullscreen(); 
-        } else { 
-          slideshow.requestFullscreen(); 
-        } 
-      }); 
-      slideshow.appendChild(fullscreenButton);
-    }
-
-    showImage(currentIndex1, images1, document.getElementById('slideshow1'));
-    showImage(currentIndex2, images2, document.getElementById('slideshow2'));
-
-    // Function to start auto-cycling for slideshow 1
-    function startAutoCycle1() {
-      setInterval(() => {
-        currentIndex1 = (currentIndex1 + 1) % images1.length;
-        showImage(currentIndex1, images1, document.getElementById('slideshow1'));
-      }, 5000); // Change image every 5 seconds
-    }
-
-    // Function to start auto-cycling for slideshow 2
-    function startAutoCycle2() {
-      setInterval(() => {
-        currentIndex2 = (currentIndex2 + 1) % images2.length;
-        showImage(currentIndex2, images2, document.getElementById('slideshow2'));
-      }, 5000); // Change image every 5 seconds
-    }
-
-    startAutoCycle1(); // Start auto-cycling for slideshow 1
-    startAutoCycle2(); // Start auto-cycling for slideshow 2
-
+    });
+    document.querySelectorAll('.share-btn').forEach(btn => {
+      btn.addEventListener('click', function(){
+        if (navigator.share) {
+          navigator.share({
+            title: document.title,
+            text: 'Check out this project!',
+            url: window.location.href
+          }).then(() => console.log('Thanks for sharing!'))
+            .catch(console.error);
+        } else {
+          navigator.clipboard.writeText(window.location.href)
+            .then(() => alert('URL copied to clipboard!'));
+        }
+      });
+    });
+    loadProjectData();
+    loadComments('project1');
+    loadComments('project2');
   } else if (tabName === 'contact') {
     content.innerHTML = `
-      <h1>Contact Page</h1>
-      <style>
-      /* Resetting default spacing */
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      /* Base styles for body */
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f5f5f5;
-        padding: 20px;
-        line-height: 1.6;
-      }
-      
-      /* Container for the contact form */
-      .contact-container {
-        max-width: 600px;
-        background-color: #fff;
-        margin: 40px auto;
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      }
-      
-      /* Form heading styling */
-      .contact-container h2 {
-        text-align: center;
-        margin-bottom: 20px;
-        font-size: 24px;
-        color: #333;
-      }
-      
-      /* Styling for form labels */
-      .contact-form label {
-        display: block;
-        margin-bottom: 5px;
-        color: #555;
-        font-weight: bold;
-      }
-      
-      /* Styling for form inputs and textarea */
-      .contact-form input,
-      .contact-form textarea {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 16px;
-      }
-      
-      /* Input focus style */
-      .contact-form input:focus,
-      .contact-form textarea:focus {
-        border-color: #0078D4;
-        outline: none;
-      }
-      
-      /* Styling for the submit button */
-      .contact-form button {
-        width: 100%;
-        padding: 12px;
-        background-color: #0078D4;
-        color: #fff;
-        font-size: 18px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-      }
-      
-      /* Button hover effect */
-      .contact-form button:hover {
-        background-color: #0053a6;
-      }
-      </style>
+      <h1>Contact Me</h1>
       <div class="contact-container">
         <h2>Contact Me</h2>
         <form class="contact-form" action="https://formspree.io/f/mgvavbrl" method="POST">
           <label for="name">Name</label>
           <input type="text" id="name" name="name" placeholder="Your full name" required>
-          
           <label for="email">Email</label>
           <input type="email" id="email" name="_replyto" placeholder="Your email address" required>
-          
           <label for="subject">Subject</label>
           <input type="text" id="subject" name="subject" placeholder="Subject" required>
-          
           <label for="message">Message</label>
           <textarea id="message" name="message" rows="6" placeholder="Your message here..." required></textarea>
-          
           <button type="submit">Send Message</button>
         </form>
       </div>
     `;
   }
 }
+window.updateContent = updateContent;
 
-// Function to update the browser's title
 function updateTitle(tabName) {
   if (tabName === 'home') {
     document.title = "Home - My Website";
   } else if (tabName === 'about') {
-    document.title = "About Us - My Website";
+    document.title = "About - My Website";
   } else if (tabName === 'projects') {
     document.title = "Projects - My Website";
   } else if (tabName === 'contact') {
     document.title = "Contact - My Website";
   }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const tabs = document.querySelectorAll('.tab-link');
+  const defaultTab = document.querySelector('.tab-link.active');
+  if (defaultTab) {
+    const tabName = defaultTab.getAttribute('data-tab');
+    updateContent(tabName);
+    updateTitle(tabName);
+  }
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function (event) {
+      event.preventDefault();
+      tabs.forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      const tabName = this.getAttribute('data-tab');
+      updateContent(tabName);
+      updateTitle(tabName);
+    });
+  });
+});
+
+// ===== Slideshow Functions =====
+function initializeSlider(sliderId) {
+  const slider = document.getElementById(sliderId);
+  if (!slider) return;
+  const images = slider.querySelectorAll('img');
+  if (images.length < 2) return;
+  let currentIndex = 0;
+  const intervalId = setInterval(() => {
+    images[currentIndex].classList.remove('active');
+    currentIndex = (currentIndex + 1) % images.length;
+    images[currentIndex].classList.add('active');
+  }, 5000);
+  sliderIntervals.push(intervalId);
+}
+
+function toggleFullscreen(sliderId) {
+  const slider = document.getElementById(sliderId);
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+  } else {
+    slider.requestFullscreen().catch(err => console.error(err));
+  }
+}
+
+// ===== Firebase Comment Functions =====
+
+/**
+ * Submit a top-level comment.
+ * Users must be logged in and may only comment once per project.
+ */
+function submitProjectComment(event, projectId) {
+  event.preventDefault();
+  if (!currentUser) {
+    alert("Please login to comment.");
+    return;
+  }
+  const form = event.target;
+  const input = form.querySelector('input[name="comment"]');
+  const commentText = input.value.trim();
+  if (commentText === '') return;
+  
+  // Check if user already commented on this project (top-level comment).
+  db.collection("comments")
+    .where("projectId", "==", projectId)
+    .where("userId", "==", currentUser.uid)
+    .where("parentCommentId", "==", null)
+    .get()
+    .then(snapshot => {
+      if (!snapshot.empty) {
+        alert("You have already commented on this project.");
+      } else {
+        db.collection("comments").add({
+          projectId: projectId,
+          text: commentText,
+          likes: 0,
+          dislikes: 0,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          userId: currentUser.uid,
+          parentCommentId: null
+        })
+        .then(() => {
+          console.log("Comment added successfully!");
+          input.value = '';
+          loadComments(projectId);
+        })
+        .catch(err => console.error("Error adding comment:", err));
+      }
+    });
+}
+
+/**
+ * Submit a reply to a comment.
+ */
+function submitReply(event, projectId, parentCommentId) {
+  event.preventDefault();
+  if (!currentUser) {
+    alert("Please login to reply.");
+    return;
+  }
+  const form = event.target;
+  const input = form.querySelector('input[name="reply"]');
+  const replyText = input.value.trim();
+  if (replyText === '') return;
+  
+  db.collection("comments").add({
+    projectId: projectId,
+    text: replyText,
+    likes: 0,
+    dislikes: 0,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    userId: currentUser.uid,
+    parentCommentId: parentCommentId
+  })
+  .then(() => {
+    console.log("Reply added successfully!");
+    input.value = '';
+    // Reload replies for the parent comment.
+    loadReplies(parentCommentId);
+  })
+  .catch(err => console.error("Error adding reply:", err));
+}
+
+/**
+ * Load top-level comments (parentCommentId === null) for a project,
+ * then load replies for each comment.
+ */
+function loadComments(projectId) {
+  const projectCard = document.getElementById(projectId);
+  if (!projectCard) return;
+  const commentsArea = projectCard.querySelector('.comments-area');
+  if (!commentsArea) return;
+  commentsArea.innerHTML = "";
+  db.collection("comments")
+    .where("projectId", "==", projectId)
+    .where("parentCommentId", "==", null)
+    .orderBy("createdAt", "desc")
+    .get()
+    .then(snapshot => {
+      snapshot.forEach(doc => {
+        const comment = doc.data();
+        const commentDiv = document.createElement('div');
+        commentDiv.classList.add('comment-item');
+        commentDiv.setAttribute('data-comment-id', doc.id);
+        commentDiv.innerHTML = `
+          <p class="comment-text">${comment.text}</p>
+          <div class="comment-actions">
+            <button class="comment-like-btn">Like <span class="comment-like-count">${comment.likes}</span></button>
+            <button class="comment-dislike-btn">Dislike <span class="comment-dislike-count">${comment.dislikes}</span></button>
+            <button class="reply-btn">Reply</button>
+          </div>
+          <div class="replies"></div>
+        `;
+        // Attach reaction event listeners.
+        commentDiv.querySelector('.comment-like-btn').addEventListener('click', function() {
+          updateCommentReaction(doc.id, 'like');
+        });
+        commentDiv.querySelector('.comment-dislike-btn').addEventListener('click', function() {
+          updateCommentReaction(doc.id, 'dislike');
+        });
+        // Attach reply button listener.
+        commentDiv.querySelector('.reply-btn').addEventListener('click', function() {
+          showReplyForm(doc.id, projectId, commentDiv);
+        });
+        commentsArea.appendChild(commentDiv);
+        // Load replies for this comment.
+        loadReplies(doc.id);
+      });
+    })
+    .catch(err => console.error("Error loading comments:", err));
+}
+
+/**
+ * Load replies (comments where parentCommentId equals the given commentId)
+ * and append them to the parent comment's "replies" container.
+ */
+function loadReplies(parentCommentId) {
+  const parentCommentDiv = document.querySelector(`[data-comment-id="${parentCommentId}"]`);
+  if (!parentCommentDiv) return;
+  const repliesContainer = parentCommentDiv.querySelector('.replies');
+  repliesContainer.innerHTML = "";
+  db.collection("comments")
+    .where("parentCommentId", "==", parentCommentId)
+    .orderBy("createdAt", "asc")
+    .get()
+    .then(snapshot => {
+      snapshot.forEach(doc => {
+        const reply = doc.data();
+        const replyDiv = document.createElement('div');
+        replyDiv.classList.add('comment-item');
+        replyDiv.setAttribute('data-comment-id', doc.id);
+        replyDiv.innerHTML = `
+          <p class="comment-text">${reply.text}</p>
+          <div class="comment-actions">
+            <button class="comment-like-btn">Like <span class="comment-like-count">${reply.likes}</span></button>
+            <button class="comment-dislike-btn">Dislike <span class="comment-dislike-count">${reply.dislikes}</span></button>
+          </div>
+        `;
+        replyDiv.querySelector('.comment-like-btn').addEventListener('click', function() {
+          updateCommentReaction(doc.id, 'like');
+        });
+        replyDiv.querySelector('.comment-dislike-btn').addEventListener('click', function() {
+          updateCommentReaction(doc.id, 'dislike');
+        });
+        repliesContainer.appendChild(replyDiv);
+      });
+    })
+    .catch(err => console.error("Error loading replies:", err));
+}
+
+/**
+ * Show a reply form below a comment.
+ */
+function showReplyForm(parentCommentId, projectId, commentDiv) {
+  // Avoid adding multiple reply forms.
+  if (commentDiv.querySelector('.reply-form')) return;
+  const replyForm = document.createElement('form');
+  replyForm.classList.add('reply-form');
+  replyForm.innerHTML = `
+    <input type="text" name="reply" placeholder="Write a reply" required>
+    <button type="submit">Reply</button>
+  `;
+  replyForm.addEventListener('submit', e => {
+    submitReply(e, projectId, parentCommentId);
+    // Remove the reply form after submission.
+    replyForm.remove();
+  });
+  commentDiv.appendChild(replyForm);
+}
+
+/**
+ * Update like/dislike for a comment and update the DOM.
+ */
+function updateCommentReaction(commentId, type) {
+  const field = type === 'like' ? 'likes' : 'dislikes';
+  db.collection("comments").doc(commentId).update({
+    [field]: firebase.firestore.FieldValue.increment(1)
+  })
+  .then(() => {
+    console.log(`Comment ${type} updated for: ${commentId}`);
+    const commentElem = document.querySelector(`[data-comment-id="${commentId}"]`);
+    if (commentElem) {
+      if (type === 'like') {
+        const likeCountElem = commentElem.querySelector('.comment-like-count');
+        likeCountElem.textContent = parseInt(likeCountElem.textContent) + 1;
+      } else {
+        const dislikeCountElem = commentElem.querySelector('.comment-dislike-count');
+        dislikeCountElem.textContent = parseInt(dislikeCountElem.textContent) + 1;
+      }
+    }
+  })
+  .catch(err => console.error("Error updating comment reaction:", err));
+}
+
+/**
+ * Update project reaction.
+ * Each user can only react once per project.
+ */
+function updateProjectReaction(projectId, type) {
+  if (!currentUser) {
+    alert("Please login to react.");
+    return;
+  }
+  const reactionDocId = `${projectId}_${currentUser.uid}`;
+  db.collection("projectReactions").doc(reactionDocId).get()
+    .then(doc => {
+      if (doc.exists) {
+        alert("You have already reacted to this project.");
+      } else {
+        db.collection("projectReactions").doc(reactionDocId).set({
+          projectId: projectId,
+          userId: currentUser.uid,
+          reaction: type
+        })
+        .then(() => {
+          const field = (type === "like") ? "likes" : "dislikes";
+          return db.collection("projects").doc(projectId).update({
+            [field]: firebase.firestore.FieldValue.increment(1)
+          });
+        })
+        .then(() => {
+          const projectCard = document.getElementById(projectId);
+          if (projectCard) {
+            if (type === "like") {
+              const likeCountElem = projectCard.querySelector('.like-count');
+              likeCountElem.textContent = parseInt(likeCountElem.textContent) + 1;
+            } else {
+              const dislikeCountElem = projectCard.querySelector('.dislike-count');
+              dislikeCountElem.textContent = parseInt(dislikeCountElem.textContent) + 1;
+            }
+          }
+        })
+        .catch(err => console.error("Error updating project reaction:", err));
+      }
+    })
+    .catch(err => console.error("Error checking reaction:", err));
 }

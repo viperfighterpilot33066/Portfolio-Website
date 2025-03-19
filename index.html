@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Portfolio page</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Portfolio Page</title>
+  <!-- Firebase SDKs for app, Firestore, and Auth (v9 compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-auth-compat.js"></script>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <link rel="stylesheet" href="style.css" />
+    <!-- Auth Section -->
+    <div id="auth-section"></div>
   </header>
 
   <!-- Navigation Bar -->
@@ -20,29 +26,7 @@
 
   <!-- Main Content Area -->
   <main id="content">
-    <h1>Hello, I'm Tristan.</h1>
-    <h2>Skills:</h2>
-    <ul>
-      <li>HTML</li>
-      <li>CSS</li>
-      <li>JavaScript</li>
-    </ul>
-    <div id="container1">
-      <p>
-        A little about me: I'm a passionate web developer always trying to learn more about web development and experimenting with new coding languages. I also know a lot about cybersecurity and am currently learning ethical hacking.
-      </p>
-    </div>
-    <div class="slideshow-container">
-      <h3>Showcase 1</h3>
-      <div class="slideshow" id="slideshow1">
-        <button class="fullscreen-btn">Full Screen</button>
-      </div>
-      <h3>Showcase 2</h3>
-      <div class="slideshow" id="slideshow2">
-        <button class="fullscreen-btn">Full Screen</button>
-      </div>
-
-    </div>
+    <!-- Content is loaded dynamically -->
   </main>
 
   <!-- Social Media Footer -->
@@ -51,6 +35,26 @@
     <a href="https://pinterest.com/tristanvanderweert" target="_blank">Pinterest</a> |
     <a href="https://github.com/viperfighterpilot33066" target="_blank">GitHub</a>
   </footer>
+
+  <!-- Login/Signup Modal -->
+  <div id="login-modal">
+    <div id="login-form-container">
+      <h2>Login</h2>
+      <form id="login-form">
+        <input type="email" id="login-email" placeholder="Email" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+      <h3>or Sign Up</h3>
+      <form id="signup-form">
+        <input type="email" id="signup-email" placeholder="Email" required>
+        <input type="password" id="signup-password" placeholder="Password" required>
+        <button type="submit">Sign Up</button>
+      </form>
+      <button id="close-login-modal">Close</button>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
