@@ -127,8 +127,13 @@ function updateContent(tabName) {
             <img src="images/screenshot3.png" alt="Project 1 Image 3">
           </div>
           <div class="project-info">
-            <h3>Project One</h3>
-            <p>This project showcases my skills in web development with a modern, clean design.</p>
+            <h3>Web Based messaging app</h3>
+            <p>this project is a website that can be used as a group chat it features stuff like being able to inject different 
+            themes that i make into the site in this example i have "Fallout 4" themes injected through a CSS file that you can 
+            upload through settings, it also has reactions, message editting, message deleting and notification.
+            <br>
+            this project can be found <a href="https://viperfighterpilot33066.github.io/Messaging-App/">here</a>
+            </p>
           </div>
           <div class="project-interactions">
             <button class="like-btn">Like <span class="like-count">0</span></button>
