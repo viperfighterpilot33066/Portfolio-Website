@@ -164,7 +164,7 @@ function updateContent(tabName) {
             ally moves to your location based on your inputs and a news channel where you can search news based on keywords, topics, 
             or just browse through the latest.
             <br>
-            this project can be found <a href="www.vantechweather.com">here</a>
+            this project can be found <a href="https://www.vantechweather.com/">here</a>
             </p>
           </div>
           <div class="project-interactions">
